@@ -2,10 +2,6 @@ module EnFuego
   module Authentication
 
     class OAuth < Warden::Strategies::Base
-      def valid?
-        params.include?('sign_in_with_oauth')
-      end
-
       def authenticate!
         if params.include?('oauth_token')
           request_token = DailyMile.load_request_token(session).extend(RequestTokenExtensions)

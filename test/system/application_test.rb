@@ -1,13 +1,20 @@
 require 'test/helper'
 require 'oauth/request_proxy/rack_request'
 
+# mix in a little nicer 404 reporting
+class EnFuego::Application
+  not_found do
+    raise ApplicationTest::UnimplementedRequest.new(request)
+  end
+end
+
 class ApplicationTest < Test::Unit::TestCase
   def setup
     @application = EnFuego::Application.new
     @daily_mile  = ShamDailyMile.new
     ShamRack.mount(@application, 'en-fuego.com')
     ShamRack.mount(@daily_mile,  'api.dailymile.com')
-    @daily_mile.register_oauth_consumer('http://en-fuego.com/?sign_in_with_oauth=true')
+    @daily_mile.register_oauth_consumer('http://en-fuego.com/sign-in')
   end
 
   def test_fetching_entries
@@ -46,6 +53,48 @@ class ApplicationTest < Test::Unit::TestCase
 
   def missing_element_message(type, value)
     "Could not find #{type} with value \"#{value}\".\n#{current_page.uri}\n#{'-' * 80}\n#{current_page.body.rstrip}\n#{'-' * 80}"
+  end
+
+  class ShamDailyMile < Sinatra::Base
+    not_found do
+      raise UnimplementedRequest.new(request, :headers => true)
+    end
+
+    post '/oauth/request_token' do
+      @provider.issue_request(request).query_string
+    end
+
+    get '/oauth/authorize' do
+      erb <<-TEMPLATE
+        <form method="post" action="<%= request.url %>">
+          <input type="submit" value="Allow" />
+        </form>
+      TEMPLATE
+    end
+
+    post '/oauth/authorize' do
+      user_request = @provider.backend.find_user_request(params[:oauth_token])
+      user_request.authorize
+
+      callback = user_request.callback.dup
+      callback.query = "oauth_token=#{params[:oauth_token]}"
+      redirect callback
+    end
+
+    post '/oauth/access_token' do
+      @provider.upgrade_request(request).query_string
+    end
+
+    def initialize
+      super
+      @provider = OAuthProvider.create(:in_memory)
+    end
+
+    def register_oauth_consumer(callback)
+      token = @provider.add_consumer(URI.parse(callback)).token
+      ENV['OAUTH_TOKEN']        = token.shared_key
+      ENV['OAUTH_TOKEN_SECRET'] = token.secret_key
+    end
   end
 
   class UnimplementedRequest < RuntimeError
@@ -98,45 +147,4 @@ class ApplicationTest < Test::Unit::TestCase
     end
   end
 
-  class ShamDailyMile < Sinatra::Base
-    not_found do
-      raise UnimplementedRequest.new(request, :headers => true)
-    end
-
-    post '/oauth/request_token' do
-      @provider.issue_request(request).query_string
-    end
-
-    get '/oauth/authorize' do
-      erb <<-TEMPLATE
-        <form method="post" action="<%= request.url %>">
-          <input type="submit" value="Allow" />
-        </form>
-      TEMPLATE
-    end
-
-    post '/oauth/authorize' do
-      user_request = @provider.backend.find_user_request(params[:oauth_token])
-      user_request.authorize
-
-      callback = user_request.callback.dup
-      callback.query = [callback.query, "oauth_token=#{params[:oauth_token]}"].join('&')
-      redirect callback
-    end
-
-    post '/oauth/access_token' do
-      @provider.upgrade_request(request).query_string
-    end
-
-    def initialize
-      super
-      @provider = OAuthProvider.create(:in_memory)
-    end
-
-    def register_oauth_consumer(callback)
-      token = @provider.add_consumer(URI.parse(callback)).token
-      ENV['OAUTH_TOKEN']        = token.shared_key
-      ENV['OAUTH_TOKEN_SECRET'] = token.secret_key
-    end
-  end
 end

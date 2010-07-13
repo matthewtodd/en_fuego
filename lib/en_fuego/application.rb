@@ -4,7 +4,6 @@ module EnFuego
 
     use Warden::Manager do |config|
       config.strategies.add :oauth, EnFuego::Authentication::OAuth
-      config.default_strategies :oauth
       config.failure_app = EnFuego::Application
       config.serialize_into_session { |user| user.oauth_token }
       config.serialize_from_session { |oauth_token| User.find_by_oauth_token(oauth_token) }
@@ -16,6 +15,16 @@ module EnFuego
     get '/' do
       env['warden'].authenticate!
       'Hello World!'
+    end
+
+    post '/sign-in' do
+      env['warden'].authenticate!(:oauth)
+      redirect '/'
+    end
+
+    get '/sign-in' do
+      env['warden'].authenticate!(:oauth)
+      redirect '/'
     end
 
     get '/unauthenticated' do
