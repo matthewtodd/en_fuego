@@ -6,7 +6,7 @@ module EnFuego
       end
 
       def create(attributes)
-        registry[attributes[oauth_token]] = new(attributes)
+        registry[attributes[:oauth_token]] = new(attributes)
       end
 
       private
@@ -18,6 +18,10 @@ module EnFuego
 
     def initialize(attributes)
       @attributes = attributes
+    end
+
+    def oauth_token
+      @attributes[:oauth_token]
     end
   end
 end

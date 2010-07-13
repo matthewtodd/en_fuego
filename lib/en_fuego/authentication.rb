@@ -22,7 +22,7 @@ module EnFuego
             success!(user)
           end
         else
-          request_token = DailyMile.get_request_token
+          request_token = DailyMile.get_request_token.extend(RequestTokenExtensions)
           request_token.store(session)
           redirect!(request_token.authorize_url)
           throw(:warden)
@@ -31,12 +31,7 @@ module EnFuego
 
       private
 
-      module RequestTokenInstanceMethods
-        # FIXME need a proper callback
-        def authorize_url
-          super(:oauth_callback => '', :sign_in_with_oauth => true)
-        end
-
+      module RequestTokenExtensions
         def blank?
           token.nil?
         end

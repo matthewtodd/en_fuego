@@ -1,5 +1,7 @@
 module EnFuego
   class Application < Sinatra::Base
+    use RackEnvironment if development?
+
     use Warden::Manager do |config|
       config.strategies.add :oauth, EnFuego::Authentication::OAuth
       config.default_strategies :oauth

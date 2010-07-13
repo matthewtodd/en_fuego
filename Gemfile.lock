@@ -1,5 +1,9 @@
 --- 
 dependencies: 
+  rack-environment: 
+    group: 
+    - :default
+    version: ~> 1.2.0
   sham_rack: 
     group: 
     - :test
@@ -42,6 +46,8 @@ specs:
     source: 0
 - rack: 
     version: 1.2.1
+- rack-environment: 
+    version: 1.2.0
 - redgreen: 
     version: 1.2.2
 - sham_rack: 
@@ -50,7 +56,7 @@ specs:
     version: "1.0"
 - warden: 
     version: 0.10.7
-hash: c96c2476490848dd140d156422b2be61d08c8bef
+hash: 4c2b76d1a7ff46869ab9f686acd7da07c2c319f9
 sources: 
 - Path: 
     path: !ruby/object:Pathname 
