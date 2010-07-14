@@ -19,17 +19,22 @@ module Test::Unit
       backtrace.collect { |line| line.sub(ROOT, '.') }.
                 select  { |line| line.start_with?('.') }.
                 reject  { |line| line.include?('vendor') }.
-                collect { |line| ("%-35s\tline %s" % line.split(':', 2)).sub(':', "\t") }.
+                collect { |line| format_backtrace(line) }.
                 collect { |line| color_backtrace(line) }.
                 reverse
     end
 
     def color_backtrace(line)
-      if line.start_with?('./lib')
-        "\e[44m#{line}\e[0m"
-      else
-        "\e[0m#{line}\e[0m"
-      end
+      color = line.start_with?('./lib') ? 44 : 0
+      "\e[#{color}m#{line}\e[0m"
+    end
+
+    def format_backtrace(line)
+      parts = line.split(':')
+
+      format = '%-34.34s line %-4.4s'
+      format << ' %s' if parts.length > 2
+      format % parts
     end
   end
 
