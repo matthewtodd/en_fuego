@@ -2,7 +2,7 @@ require 'oauth/request_proxy/rack_request'
 
 class ShamDailyMile < Sinatra::Base
   post '/oauth/request_token' do
-    provider.issue_request(request).query_string
+    @tokens.issue_request(request)
   end
 
   get '/oauth/authorize' do
@@ -14,40 +14,69 @@ class ShamDailyMile < Sinatra::Base
   end
 
   post '/oauth/authorize' do
-    redirect provider.authorize_request(params[:oauth_token]).callback
+    redirect @tokens.authorize!
   end
 
   post '/oauth/access_token' do
-    provider.upgrade_request(request).query_string
+    @tokens.upgrade_request(request)
   end
 
   not_found do
     raise UnimplementedRequest.new(request, :headers => true)
   end
 
-  def register_oauth_consumer(callback)
-    token = provider.add_consumer(callback).token
-    ENV['OAUTH_TOKEN']  = token.shared_key
-    ENV['OAUTH_SECRET'] = token.secret_key
+  def initialize(callback)
+    @tokens = Tokens.new(callback)
+    @tokens.populate(ENV)
+    super(nil)
   end
 
-  private
+  class Tokens
+    include OAuth::Helper
 
-  def provider
-    @provider ||= OAuthProvider.create(:in_memory).extend(OAuthProviderExtensions)
-  end
-
-  module OAuthProviderExtensions
-    def authorize_request(token)
-      request = @backend.find_user_request(token)
-      request.authorize
-      request.extend(OAuthUserRequestExtensions)
+    def initialize(callback)
+      @consumer   = OAuth::ServerToken.new
+      @request    = OAuth::ServerToken.new
+      @access     = OAuth::ServerToken.new
+      @authorized = false
+      @callback   = "#{callback}?oauth_token=#{@request.token}"
     end
-  end
 
-  module OAuthUserRequestExtensions
-    def callback
-      "#{super}?oauth_token=#{shared_key}"
+    def populate(hash)
+      ENV['OAUTH_TOKEN']  = @consumer.token
+      ENV['OAUTH_SECRET'] = @consumer.secret
+    end
+
+    def issue_request(request)
+      verify(request)
+      query_string(@request)
+    end
+
+    def authorize!
+      @authorized = true
+      @callback
+    end
+
+    def upgrade_request(request)
+      verify(request, :token => @request)
+      raise "Token not authorized." unless @authorized
+      query_string(@access)
+    end
+
+    private
+
+    # I'd like to just say token.to_query, but it puts the secret in
+    # "oauth_secret", while OAuth::ConsumerToken.from_hash looks for it in
+    # "oauth_token_secret".
+    def query_string(token)
+      "oauth_token=#{escape(token.token)}&oauth_token_secret=#{escape(token.secret)}"
+    end
+
+    def verify(request, options={})
+      sig = OAuth::Signature.build(request, options.merge(:consumer => @consumer))
+      unless sig.verify
+        raise "Signature verification failed: #{sig.signature} != #{sig.request.signature}"
+      end
     end
   end
 end

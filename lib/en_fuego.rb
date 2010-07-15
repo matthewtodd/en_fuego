@@ -1,7 +1,6 @@
 module EnFuego
-  autoload :Application,    'en_fuego/application'
-  autoload :Authentication, 'en_fuego/authentication'
-  autoload :User,           'en_fuego/user'
+  autoload :Application, 'en_fuego/application'
+  autoload :User,        'en_fuego/user'
 
   class << self
     def datadir(*args)

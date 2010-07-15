@@ -45,7 +45,7 @@ module EnFuego
       oauth_token    = params[:oauth_token]
       oauth_verifier = params[:oauth_verifier]
 
-      request_token = session_request_token # TODO check match
+      request_token = session_request_token_matching(oauth_token)
       access_token  = request_token.get_access_token(:oauth_verifier => oauth_verifier)
 
       user = User.create(
@@ -83,6 +83,11 @@ module EnFuego
         else
           OAuth::RequestToken.new(oauth_consumer, session[:oauth_token], session[:oauth_secret])
         end
+      end
+
+      def session_request_token_matching(token)
+        result = session_request_token
+        result if result.token == token
       end
     end
   end

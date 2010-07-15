@@ -8,14 +8,14 @@ dependencies:
     group: 
     - :test
     version: ~> 1.3.1
-  oauth: 
-    group: 
-    - :default
-    version: ~> 0.4.1
   mechanize: 
     group: 
     - :test
     version: ~> 1.0.0
+  oauth: 
+    group: 
+    - :default
+    version: ~> 0.4.1
   rack-openid: 
     group: 
     - :default
@@ -26,26 +26,17 @@ dependencies:
     group: 
     - :default
     version: = 1.0
-  oauth_provider: 
-    group: 
-    - :test
-    version: ">= 0"
   redgreen: 
     group: 
     - :test
     version: ~> 1.2.2
 specs: 
-- rake: 
-    version: 0.8.7
 - nokogiri: 
     version: 1.4.2
 - mechanize: 
     version: 1.0.0
 - oauth: 
     version: 0.4.1
-- oauth_provider: 
-    version: 0.0.9
-    source: 0
 - rack: 
     version: 1.2.1
 - rack-environment: 
@@ -60,10 +51,7 @@ specs:
     version: 1.3.1
 - sinatra: 
     version: "1.0"
-hash: 005b30c552d89bd6d4ff333370641542b453ba27
+hash: f1c8db8f56c7667fe5a00de5af1f0bea4790b57a
 sources: 
-- Path: 
-    path: !ruby/object:Pathname 
-      path: test/vendor/oauth_provider
 - Rubygems: 
     uri: http://rubygems.org/
