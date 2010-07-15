@@ -1,38 +1,40 @@
 module EnFuego
   class Application < Sinatra::Base
-    set :views, EnFuego.datadir('views')
-
     use RackEnvironment if development?
     use Rack::Session::Cookie
     use Rack::OpenID
 
-    get '/' do
-      if session_user
-        "You Made It!"
-      else
-        redirect '/sign-in'
-      end
-    end
+    set :views, EnFuego.datadir('views')
 
-    get '/sign-in' do
-      erb :sign_in
+    get '/' do
+      erb(session.user ? :dashboard : :sign_in)
     end
 
     post '/sign-in' do
+      authenticate_with_openid do |identity_url|
+        if user = User.find_by_identity_url(identity_url)
+          session.user = user
+          redirect '/'
+        else
+          session[:identity_url] = identity_url
+          start_authorize_with_oauth
+        end
+      end
+    end
+
+    get '/sign-up' do
+      finish_authorize_with_oauth do |access_token|
+        user = User.create(:identity_url => session[:identity_url], :access_token => access_token)
+        session.user = user
+        redirect '/'
+      end
+    end
+
+    def authenticate_with_openid
       if response = request.env[Rack::OpenID::RESPONSE]
         case response.status
         when :success
-          if user = User.find_by_identity_url(response.identity_url)
-            session_user(user)
-            redirect '/'
-          else
-            token = oauth_consumer.get_request_token
-            session_identity_url(response.identity_url)
-            session_request_token(token)
-            redirect token.authorize_url
-          end
-        else
-          halt response.inspect
+          yield response.identity_url
         end
       else
         headers Rack::OpenID::AUTHENTICATE_HEADER =>
@@ -41,54 +43,26 @@ module EnFuego
       end
     end
 
-    get '/sign-up' do
-      oauth_token    = params[:oauth_token]
-      oauth_verifier = params[:oauth_verifier]
-
-      request_token = session_request_token_matching(oauth_token)
-      access_token  = request_token.get_access_token(:oauth_verifier => oauth_verifier)
-
-      user = User.create(
-               :identity_url => session_identity_url,
-               :access_token => access_token)
-      session_user(user)
-      redirect '/'
+    def start_authorize_with_oauth
+      request_token = oauth_consumer.get_request_token
+      session.request_token = request_token
+      redirect request_token.authorize_url
     end
 
-    helpers do
-      def oauth_consumer
-        OAuth::Consumer.new(ENV['OAUTH_TOKEN'], ENV['OAUTH_SECRET'], :site => 'http://api.dailymile.com')
-      end
+    def finish_authorize_with_oauth
+      oauth_token    = params[:oauth_token]
+      oauth_verifier = params[:oauth_verifier]
+      request_token  = session.request_token(oauth_consumer)
 
-      def session_user(user=nil)
-        if user
-          session[:user] = user.identity_url
-        else
-          User.find_by_identity_url(session[:user])
-        end
-      end
+      yield request_token.get_access_token(:oauth_verifier => oauth_verifier)
+    end
 
-      def session_identity_url(url=nil)
-        if url
-          session[:identity_url] = url
-        else
-          session[:identity_url]
-        end
-      end
+    def oauth_consumer
+      OAuth::Consumer.new(ENV['OAUTH_TOKEN'], ENV['OAUTH_SECRET'], :site => 'http://api.dailymile.com')
+    end
 
-      def session_request_token(token=nil)
-        if token
-          session[:oauth_token]  = token.token
-          session[:oauth_secret] = token.secret
-        else
-          OAuth::RequestToken.new(oauth_consumer, session[:oauth_token], session[:oauth_secret])
-        end
-      end
-
-      def session_request_token_matching(token)
-        result = session_request_token
-        result if result.token == token
-      end
+    def session
+      super.extend(Session)
     end
   end
 end

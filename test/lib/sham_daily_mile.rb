@@ -37,9 +37,13 @@ class ShamDailyMile < Sinatra::Base
     def initialize(callback)
       @consumer   = OAuth::ServerToken.new
       @request    = OAuth::ServerToken.new
+      @verifier   = OAuth::ServerToken.new
       @access     = OAuth::ServerToken.new
       @authorized = false
-      @callback   = "#{callback}?oauth_token=#{@request.token}"
+
+      callback = URI.parse(callback)
+      callback.query = [callback.query, "oauth_token=#{@request.token}", "oauth_verifier=#{@verifier.token}"].join('&')
+      @callback = callback.to_s
     end
 
     def populate(hash)
@@ -74,8 +78,13 @@ class ShamDailyMile < Sinatra::Base
 
     def verify(request, options={})
       sig = OAuth::Signature.build(request, options.merge(:consumer => @consumer))
+
       unless sig.verify
         raise "Signature verification failed: #{sig.signature} != #{sig.request.signature}"
+      end
+
+      if verifier = sig.request.oauth_verifier
+        raise "Token not verified." unless verifier == @verifier.token
       end
     end
   end
