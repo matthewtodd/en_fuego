@@ -58,11 +58,20 @@ class UnimplementedRequest < FormattedError
   end
 
   def headers
-    @request.env.to_a.sort.map { |k,v| "#{k}: #{v}" }.join("\n")
+    @request.env.to_a.sort.map { |k,v| "#{k}: #{format_value(v)}" }.join("\n")
   end
 
   def body
     @request.body.rewind
     @request.body.read
+  end
+
+  def format_value(value)
+    case value
+    when Array, Hash
+      value.inspect
+    else
+      value.to_s
+    end
   end
 end

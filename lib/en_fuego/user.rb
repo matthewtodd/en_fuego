@@ -1,12 +1,12 @@
 module EnFuego
   class User
     class << self
-      def find_by_oauth_token(oauth_token)
-        registry[oauth_token]
+      def find_by_identity_url(identity_url)
+        registry[identity_url]
       end
 
       def create(attributes)
-        registry[attributes[:oauth_token]] = new(attributes)
+        registry[attributes[:identity_url]] = new(attributes)
       end
 
       private
@@ -20,8 +20,8 @@ module EnFuego
       @attributes = attributes
     end
 
-    def oauth_token
-      @attributes[:oauth_token]
+    def identity_url
+      @attributes[:identity_url]
     end
   end
 end

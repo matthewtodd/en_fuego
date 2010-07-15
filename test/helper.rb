@@ -17,8 +17,10 @@ module Test::Unit
       #return backtrace.reverse # useful if something goes wonky
 
       backtrace.collect { |line| line.sub(ROOT, '.') }.
-                select  { |line| line.start_with?('.') }.
-                reject  { |line| line.include?('vendor') }.
+                collect { |line| replace_ruby_path(line) }.
+                collect { |line| replace_gem_path(line) }.
+                reject  { |line| line.start_with?('RUBY') }.
+                reject  { |line| line.start_with?('GEM') }.
                 collect { |line| format_backtrace(line) }.
                 collect { |line| color_backtrace(line) }.
                 reverse
@@ -32,9 +34,21 @@ module Test::Unit
     def format_backtrace(line)
       parts = line.split(':')
 
-      format = '%-34.34s line %-4.4s'
+      format = '%-44.44s line %-4.4s'
       format << ' %s' if parts.length > 2
       format % parts
+    end
+
+    def replace_ruby_path(line)
+      line.sub("#{RbConfig::CONFIG['rubylibdir']}/", 'RUBY ')
+    end
+
+    def replace_gem_path(line)
+      Gem.path.each do |path|
+        line.sub! "#{path}/gems/", 'GEM '
+      end
+
+      line
     end
   end
 

@@ -4,6 +4,7 @@ module MechanizeDriver
   end
 
   def click_button(text)
+    raise MissingElement.new('button', text, current_page) unless current_page.kind_of?(Mechanize::Page)
     form = current_page.forms.find { |form| form.button_with(:value => text) }
     raise MissingElement.new('button', text, current_page) if form.nil?
     form.click_button(form.button_with(:value => text))
@@ -17,6 +18,12 @@ module MechanizeDriver
 
   def current_page
     @agent.current_page
+  end
+
+  def fill_in(name, options={})
+    form = current_page.forms.find { |form| form.text_field?(name) }
+    raise MissingElement.new('text field', name, current_page) if form.nil?
+    form[name] = options[:with]
   end
 
   def visit(url)

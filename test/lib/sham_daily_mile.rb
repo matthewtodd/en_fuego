@@ -14,8 +14,7 @@ class ShamDailyMile < Sinatra::Base
   end
 
   post '/oauth/authorize' do
-    token = params[:oauth_token]
-    redirect provider.authorize_request(token).callback_with(token)
+    redirect provider.authorize_request(params[:oauth_token]).callback
   end
 
   post '/oauth/access_token' do
@@ -28,8 +27,8 @@ class ShamDailyMile < Sinatra::Base
 
   def register_oauth_consumer(callback)
     token = provider.add_consumer(callback).token
-    ENV['OAUTH_TOKEN']        = token.shared_key
-    ENV['OAUTH_TOKEN_SECRET'] = token.secret_key
+    ENV['OAUTH_TOKEN']  = token.shared_key
+    ENV['OAUTH_SECRET'] = token.secret_key
   end
 
   private
@@ -47,8 +46,8 @@ class ShamDailyMile < Sinatra::Base
   end
 
   module OAuthUserRequestExtensions
-    def callback_with(token)
-      "#{callback}?oauth_token=#{token}"
+    def callback
+      "#{super}?oauth_token=#{shared_key}"
     end
   end
 end
