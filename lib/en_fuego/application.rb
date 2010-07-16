@@ -1,13 +1,21 @@
 module EnFuego
   class Application < Sinatra::Base
-    use RackEnvironment if development?
-    use Rack::Session::Cookie
-    use Rack::OpenID
-
     set :views, EnFuego.datadir('views')
 
+    use Rack::Session::Cookie,
+      :expire_after => 31_536_000, # 1 year
+      :secret       => ENV['SESSION_SECRET']
+
+    register Extensions::OAuth
+    register Extensions::OpenID
+    register Extensions::Session
+
     get '/' do
-      erb(session.user ? :dashboard : :sign_in)
+      if session.user
+        erb :dashboard
+      else
+        erb :sign_in
+      end
     end
 
     post '/sign-in' do
@@ -27,48 +35,6 @@ module EnFuego
         session.user = user
         redirect '/'
       end
-    end
-
-    def authenticate_with_openid
-      if response = request.env[Rack::OpenID::RESPONSE]
-        case response.status
-        when :success
-          yield response.identity_url
-        end
-      else
-        headers Rack::OpenID::AUTHENTICATE_HEADER =>
-          Rack::OpenID.build_header(:identifier => params['openid_url'])
-        halt [401, 'You are being redirected.']
-      end
-    end
-
-    def start_authorize_with_oauth(user_attributes)
-      request_token = oauth_consumer.get_request_token
-
-      session.request_token   = request_token
-      session.user_attributes = user_attributes
-
-      redirect request_token.authorize_url
-    end
-
-    def finish_authorize_with_oauth
-      oauth_token    = params[:oauth_token]
-      oauth_verifier = params[:oauth_verifier]
-      request_token  = session.request_token(oauth_consumer, oauth_token)
-      access_token   = request_token.get_access_token(:oauth_verifier => oauth_verifier)
-
-      yield session.user_attributes.merge(:access_token => access_token)
-
-      session.request_token   = nil
-      session.user_attributes = nil
-    end
-
-    def oauth_consumer
-      OAuth::Consumer.new(ENV['OAUTH_TOKEN'], ENV['OAUTH_SECRET'], :site => 'http://api.dailymile.com')
-    end
-
-    def session
-      super.extend(Session)
     end
   end
 end

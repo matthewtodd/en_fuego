@@ -1,6 +1,6 @@
 module EnFuego
   autoload :Application, 'en_fuego/application'
-  autoload :Session,     'en_fuego/session'
+  autoload :Extensions,  'en_fuego/extensions'
   autoload :User,        'en_fuego/user'
 
   class << self

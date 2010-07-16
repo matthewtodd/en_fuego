@@ -47,8 +47,9 @@ class ShamDailyMile < Sinatra::Base
     end
 
     def populate(hash)
-      ENV['OAUTH_TOKEN']  = @consumer.token
-      ENV['OAUTH_SECRET'] = @consumer.secret
+      hash['OAUTH_TOKEN']  = @consumer.token
+      hash['OAUTH_SECRET'] = @consumer.secret
+      hash['OAUTH_SITE']   = 'http://api.dailymile.com'
     end
 
     def issue_request(request)
