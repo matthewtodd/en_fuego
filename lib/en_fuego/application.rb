@@ -16,15 +16,14 @@ module EnFuego
           session.user = user
           redirect '/'
         else
-          session[:identity_url] = identity_url
-          start_authorize_with_oauth
+          start_authorize_with_oauth(:identity_url => identity_url)
         end
       end
     end
 
     get '/sign-up' do
-      finish_authorize_with_oauth do |access_token|
-        user = User.create(:identity_url => session[:identity_url], :access_token => access_token)
+      finish_authorize_with_oauth do |attributes|
+        user = User.create(attributes)
         session.user = user
         redirect '/'
       end
@@ -43,18 +42,25 @@ module EnFuego
       end
     end
 
-    def start_authorize_with_oauth
+    def start_authorize_with_oauth(user_attributes)
       request_token = oauth_consumer.get_request_token
-      session.request_token = request_token
+
+      session.request_token   = request_token
+      session.user_attributes = user_attributes
+
       redirect request_token.authorize_url
     end
 
     def finish_authorize_with_oauth
       oauth_token    = params[:oauth_token]
       oauth_verifier = params[:oauth_verifier]
-      request_token  = session.request_token(oauth_consumer)
+      request_token  = session.request_token(oauth_consumer, oauth_token)
+      access_token   = request_token.get_access_token(:oauth_verifier => oauth_verifier)
 
-      yield request_token.get_access_token(:oauth_verifier => oauth_verifier)
+      yield session.user_attributes.merge(:access_token => access_token)
+
+      session.request_token   = nil
+      session.user_attributes = nil
     end
 
     def oauth_consumer
