@@ -25,31 +25,49 @@ dependencies:
     version: ~> 1.0.3
     require: 
     - rack/openid
+  heroku: 
+    group: 
+    - :development
+    version: ~> 1.9.10
   sinatra: 
     group: 
     - :default
     version: = 1.0
-  json: 
-    group: 
-    - :default
-    version: ~> 1.4.2
   redgreen: 
     group: 
     - :test
     version: ~> 1.2.2
-  builder: 
+  json_pure: 
     group: 
     - :default
-    version: ~> 2.1.2
+    version: ~> 1.4.3
+    require: 
+    - json
   sequel: 
     group: 
     - :default
     version: ~> 3.13.0
+  builder: 
+    group: 
+    - :default
+    version: ~> 2.1.2
 specs: 
+- rake: 
+    version: 0.8.7
 - builder: 
     version: 2.1.2
-- json: 
+- configuration: 
+    version: 1.1.0
+- json_pure: 
+    version: 1.4.3
+- launchy: 
+    version: 0.3.5
+- mime-types: 
+    version: "1.16"
+- rest-client: 
     version: 1.4.2
+- heroku: 
+    version: 1.9.10
 - nokogiri: 
     version: 1.4.2
 - mechanize: 
@@ -72,7 +90,7 @@ specs:
     version: "1.0"
 - sqlite3-ruby: 
     version: 1.2.5
-hash: c64ce2d159ad67923d9d999843f9a2b1670823c4
+hash: 5b2a598e27341fb918a1234adedd349c620075ec
 sources: 
 - Rubygems: 
     uri: http://rubygems.org/
