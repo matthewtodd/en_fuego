@@ -61,11 +61,11 @@ module EnFuego
 
           xml.author do
             xml.name user_name
-            xml.url  user_url
+            xml.uri  user_url
           end
 
           xml.content content
-          xml.link    permalink
+          xml.link :rel => 'alternate', :href => permalink
         end
       end
 
@@ -136,6 +136,7 @@ module EnFuego
           xml.id request.url
           xml.title 'En Fuego'
           xml.updated entries.first.updated
+          xml.link :rel => 'self', :href => request.url
 
           entries.each do |entry|
             entry.to_xml(xml, request.url)
