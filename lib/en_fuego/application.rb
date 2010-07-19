@@ -66,6 +66,7 @@ module EnFuego
 
           xml.content content
           xml.link :rel => 'alternate', :href => permalink
+          xml.published updated
         end
       end
 
