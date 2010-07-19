@@ -21,6 +21,6 @@ group :test do
   gem 'sham_rack',    '~> 1.3.1'
 end
 
-#group :production do
-  #gem 'pg',             '~> 0.9.0'
-#end
+group :production do
+  gem 'pg',             '~> 0.9.0'
+end
