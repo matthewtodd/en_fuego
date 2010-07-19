@@ -50,7 +50,7 @@ module EnFuego
       end
 
       def updated
-        @attributes['created_at']
+        Time.parse(@attributes['created_at']).utc.strftime('%Y-%m-%dT%H:%M:%SZ')
       end
 
       def to_xml(xml, uri)
