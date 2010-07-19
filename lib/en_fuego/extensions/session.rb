@@ -14,7 +14,7 @@ module EnFuego
       module Methods
         def user
           if key?(:user)
-            User.find(fetch(:user))
+            ::EnFuego::Application::User[fetch(:user)]
           else
             nil
           end
@@ -22,7 +22,7 @@ module EnFuego
 
         def user=(user)
           if user
-            store(:user, user.to_key)
+            store(:user, user.id)
           else
             delete(:user)
           end

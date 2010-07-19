@@ -21,6 +21,11 @@ class ShamDailyMile < Sinatra::Base
     @tokens.upgrade_request(request)
   end
 
+  get '/entries/friends.json' do
+    @tokens.verify_access(request)
+    { :entries => entries }.to_json
+  end
+
   not_found do
     raise UnimplementedRequest.new(request, :headers => true)
   end
@@ -29,6 +34,34 @@ class ShamDailyMile < Sinatra::Base
     @tokens = Tokens.new(callback)
     @tokens.populate(ENV)
     super(nil)
+  end
+
+  def entries
+    JSON.parse <<-JSON, :symbolize_names => true
+      [
+        {
+          "id": 232323232,
+          "message": "great run",
+          "workout": {
+            "type": "running",
+            "distance": {
+              "value": 5.5,
+              "units": "miles"
+            },
+            "duration": 23252332432,
+            "felt": "great",
+            "calories": 421
+          },
+                "user": {
+            "display_name": "Ben W.",
+            "url": "http//www.dailymile.com/people/ben",
+            "photo_url": "http://media.dailymile.com/pictures/2.jpg"
+          },
+          "permalink": "http://www.dailymile.com/entries/23131323",
+          "created_at": "2010-07-21T02:20:24-05:00"
+        }
+      ]
+    JSON
   end
 
   class Tokens
@@ -66,6 +99,10 @@ class ShamDailyMile < Sinatra::Base
       verify(request, :token => @request)
       raise "Token not authorized." unless @authorized
       query_string(@access)
+    end
+
+    def verify_access(request)
+      verify(request, :token => @access)
     end
 
     private

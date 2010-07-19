@@ -26,6 +26,12 @@ module MechanizeDriver
     form[name] = options[:with]
   end
 
+  def should_see(text)
+    unless current_page.body.include?(text)
+      raise MissingText.new(text, current_page)
+    end
+  end
+
   def visit(url)
     agent.get(url)
   end

@@ -34,6 +34,18 @@ class MissingElement < FormattedError
   end
 end
 
+class MissingText < FormattedError
+  def initialize(text, page)
+    @text = text
+    @page = page
+    super()
+  end
+
+  def sections
+    ["Could not find \"#{@text}\" at #{@page.uri}.", @page.body]
+  end
+end
+
 class UnimplementedRequest < FormattedError
   def initialize(request, options={})
     @request = request

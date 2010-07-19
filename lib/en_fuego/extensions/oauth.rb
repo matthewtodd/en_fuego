@@ -29,7 +29,10 @@ module EnFuego
           user_attributes = session[:user_attributes] || {}
 
           with_access_token do |access_token|
-            yield user_attributes.merge(:access_token => access_token)
+            yield user_attributes.merge(
+                    :oauth_token        => access_token.token,
+                    :oauth_token_secret => access_token.secret
+                  )
           end
 
           session.delete(:oauth_token)

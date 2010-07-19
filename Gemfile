@@ -1,8 +1,11 @@
 source 'http://rubygems.org/'
 
-gem 'sinatra',        '1.0'
+gem 'builder',        '~> 2.1.2'
+gem 'json',           '~> 1.4.2'
 gem 'oauth',          '~> 0.4.1'
 gem 'rack-openid',    '~> 1.0.3', :require => 'rack/openid'
+gem 'sequel',         '~> 3.13.0'
+gem 'sinatra',        '=  1.0'
 
 group :development, :test do
   gem 'sqlite3-ruby', '~> 1.2.5', :require => 'sqlite3'

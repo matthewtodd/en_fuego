@@ -14,20 +14,30 @@ class ApplicationTest < Test::Unit::TestCase
     click_button 'Authorize'
     click_button 'Allow'
     click_link 'Subscribe to Feed'
-    should_see feed_for(entries)
+    should_see_each_entry
   end
 
-  def setup
-    daily_mile      = ShamDailyMile.new('http://en-fuego.com/sign-up')
-    openid_provider = ShamOpenIDProvider.new('http://matthewtodd.org/')
+  protected
 
-    ShamRack.mount(daily_mile,           'api.dailymile.com')
-    ShamRack.mount(openid_provider,      'matthewtodd.org')
+  def setup
+    @daily_mile      = ShamDailyMile.new('http://en-fuego.com/sign-up')
+    @openid_provider = ShamOpenIDProvider.new('http://matthewtodd.org/')
+
+    ShamRack.mount(@daily_mile,          'api.dailymile.com')
+    ShamRack.mount(@openid_provider,     'matthewtodd.org')
     ShamRack.mount(EnFuego::Application, 'en-fuego.com')
   end
 
   def teardown
     ShamRack.unmount_all
+  end
+
+  private
+
+  def should_see_each_entry
+    @daily_mile.entries.each do |entry|
+      should_see(entry[:message].succ)
+    end
   end
 end
 
