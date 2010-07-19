@@ -14,10 +14,10 @@ module EnFuego
     migration 'create users' do |database|
       database.create_table :users do
         primary_key :id
-        string :identity_url,       :null => false, :unique => true
-        string :api_key,            :null => false, :unique => true
-        string :oauth_token,        :null => false
-        string :oauth_token_secret, :null => false
+        String :identity_url,       :null => false, :unique => true
+        String :api_key,            :null => false, :unique => true
+        String :oauth_token,        :null => false
+        String :oauth_token_secret, :null => false
       end
     end
 
