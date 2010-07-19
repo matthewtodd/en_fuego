@@ -36,7 +36,7 @@ class ApplicationTest < Test::Unit::TestCase
 
   def should_see_each_entry
     @daily_mile.entries.each do |entry|
-      should_see(entry[:message].succ)
+      should_see_xpath "/xmlns:feed/xmlns:entry/xmlns:content[contains(text(), '#{entry[:message]}')]"
     end
   end
 end

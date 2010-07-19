@@ -34,7 +34,7 @@ class MissingElement < FormattedError
   end
 end
 
-class MissingText < FormattedError
+class MissingXpath < FormattedError
   def initialize(text, page)
     @text = text
     @page = page
@@ -42,7 +42,7 @@ class MissingText < FormattedError
   end
 
   def sections
-    ["Could not find \"#{@text}\" at #{@page.uri}.", @page.body]
+    ["Could not find expression \"#{@text}\" at #{@page.uri}.", @page.body]
   end
 end
 

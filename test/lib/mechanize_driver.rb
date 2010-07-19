@@ -26,9 +26,10 @@ module MechanizeDriver
     form[name] = options[:with]
   end
 
-  def should_see(text)
-    unless current_page.body.include?(text)
-      raise MissingText.new(text, current_page)
+  def should_see_xpath(expression)
+    dom = Nokogiri(current_page.content)
+    if dom.search(expression).empty?
+      raise MissingXpath.new(expression, current_page)
     end
   end
 
