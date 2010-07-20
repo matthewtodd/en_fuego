@@ -50,7 +50,7 @@ module EnFuego
       end
 
       def updated
-        Time.parse(@attributes['created_at']).utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+        @attributes['created_at']
       end
 
       def to_xml(xml, uri)
@@ -64,7 +64,7 @@ module EnFuego
             xml.uri  user_url
           end
 
-          xml.content content
+          xml.content content, :type => 'html'
           xml.link :rel => 'alternate', :href => permalink
           xml.published updated
         end
@@ -89,11 +89,27 @@ module EnFuego
       end
 
       def content
-        [@attributes['workout'].inspect, @attributes['message']].join("\n\n")
+        content = []
+        content.push(workout_html) if @attributes['workout']
+        content.push(media_html)   if @attributes['media']
+        content.push(message_html) if @attributes['message']
+        content.join("\n\n")
       end
 
       def permalink
         @attributes['permalink']
+      end
+
+      def workout_html
+        "<pre>#{JSON.pretty_generate(@attributes['workout'])}</pre>"
+      end
+
+      def media_html
+        ''
+      end
+
+      def message_html
+        "<p>#{@attributes['message']}</p>"
       end
     end
 
