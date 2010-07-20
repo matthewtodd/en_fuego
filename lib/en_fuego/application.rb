@@ -155,6 +155,11 @@ module EnFuego
           xml.updated entries.first.updated
           xml.link :rel => 'self', :href => request.url
 
+          xml.author do
+            xml.name 'DailyMile'
+            xml.uri  'http://www.dailymile.com/'
+          end
+
           entries.each do |entry|
             entry.to_xml(xml, request.url)
           end
