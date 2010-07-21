@@ -65,8 +65,7 @@ module EnFuego
           end
 
           xml.content content, :type => 'html'
-          xml.link :rel => 'self',      :href => permalink
-          xml.link :rel => 'alternate', :href => permalink
+          xml.link :rel => 'self', :href => permalink
           xml.published updated
         end
       end
@@ -156,11 +155,6 @@ module EnFuego
           xml.updated entries.first.updated
           xml.link :rel => 'self',      :href => request.url
           xml.link :rel => 'alternate', :href => request.url[0...request.url.index(request.fullpath)]
-
-          xml.author do
-            xml.name 'DailyMile'
-            xml.uri  'http://www.dailymile.com/'
-          end
 
           entries.each do |entry|
             entry.to_xml(xml, request.url)
