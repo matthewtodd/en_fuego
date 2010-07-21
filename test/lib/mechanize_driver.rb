@@ -27,7 +27,7 @@ module MechanizeDriver
   end
 
   def should_see_xpath(expression)
-    dom = Nokogiri(current_page.content)
+    dom = Nokogiri::XML(current_page.content)
     if dom.search(expression).empty?
       raise MissingXpath.new(expression, current_page)
     end
