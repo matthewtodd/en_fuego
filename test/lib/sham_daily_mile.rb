@@ -37,9 +37,8 @@ class ShamDailyMile < Sinatra::Base
     raise UnimplementedRequest.new(request, :headers => true)
   end
 
-  def initialize(callback)
-    @tokens = Tokens.new(callback)
-    @tokens.populate(ENV)
+  def initialize(consumer, callback)
+    @tokens = Tokens.new(consumer, callback)
     @entries = JSON.parse <<-JSON, :symbolize_names => true
       [
         {
@@ -55,7 +54,7 @@ class ShamDailyMile < Sinatra::Base
             "felt": "great",
             "calories": 421
           },
-                "user": {
+          "user": {
             "display_name": "Ben W.",
             "url": "http//www.dailymile.com/people/ben",
             "photo_url": "http://media.dailymile.com/pictures/2.jpg"
@@ -76,8 +75,8 @@ class ShamDailyMile < Sinatra::Base
   class Tokens
     include OAuth::Helper
 
-    def initialize(callback)
-      @consumer   = OAuth::ServerToken.new
+    def initialize(consumer, callback)
+      @consumer   = OAuth::Token.new(consumer.key, consumer.secret)
       @request    = OAuth::ServerToken.new
       @verifier   = OAuth::ServerToken.new
       @access     = OAuth::ServerToken.new

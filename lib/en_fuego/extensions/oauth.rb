@@ -2,17 +2,15 @@ module EnFuego
   module Extensions
     module OAuth
 
+      attr_accessor :oauth_consumer
+
       def self.registered(app)
         app.helpers Helper
       end
 
       module Helper
         def oauth_consumer
-          @oauth_consumer ||= ::OAuth::Consumer.new(
-                                  ENV['OAUTH_TOKEN'],
-                                  ENV['OAUTH_SECRET'],
-                                  :site => ENV['OAUTH_SITE']
-                                )
+          options.oauth_consumer
         end
 
         def start_authorize_with_oauth(user_attributes)

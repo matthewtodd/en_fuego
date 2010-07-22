@@ -41,12 +41,21 @@ class ApplicationTest < Test::Unit::TestCase
   protected
 
   def setup
-    ShamRack.mount(ShamDailyMile.new('http://en-fuego.com/sign-up'),  'api.dailymile.com')
-    ShamRack.mount(ShamOpenIDProvider.new('http://matthewtodd.org/'), 'matthewtodd.org')
-    ShamRack.mount(EnFuego::Application, 'en-fuego.com')
+    oauth_consumer = OAuth::Consumer.new(
+      'token', 'secret', :site => 'http://api.dailymile.com'
+    )
 
-    # start with a clean database
-    ShamRack.application_for('en-fuego.com').database[:users].truncate
+    application = EnFuego::Application.new do |app|
+      app.options.database[:users].truncate
+      app.options.oauth_consumer = oauth_consumer
+    end
+
+    daily_mile = ShamDailyMile.new(oauth_consumer, 'http://en-fuego.com/sign-up')
+    openid     = ShamOpenIDProvider.new('http://matthewtodd.org/')
+
+    ShamRack.mount(application, 'en-fuego.com')
+    ShamRack.mount(daily_mile,  'api.dailymile.com')
+    ShamRack.mount(openid,      'matthewtodd.org')
   end
 
   def teardown
