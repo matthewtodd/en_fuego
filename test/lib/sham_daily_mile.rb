@@ -29,7 +29,12 @@ class ShamDailyMile < Sinatra::Base
   post '/entries.json' do
     @tokens.verify_access(request)
     attributes = JSON.parse(request.body.read)
-    @entries.push(attributes.merge(:user => { :display_name => 'Bob' }))
+    @entries.push(attributes.merge(
+      :id   => request.object_id.to_i,
+      :user => { :display_name => 'Bob', :url => 'http://www.dailymile.com/people/bobloblaw' },
+      :permalink => request.url,
+      :created_at => Time.now.strftime('%Y-%m-%dT%H:%M:%SZ')
+    ))
     status 200
   end
 
