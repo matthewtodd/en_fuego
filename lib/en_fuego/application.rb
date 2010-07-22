@@ -2,6 +2,7 @@ module EnFuego
   class Application < Sinatra::Base
     set :views, EnFuego.datadir('views')
 
+    use Rack::Deflater
     use Rack::Session::Cookie,
       :expire_after => 31_536_000, # 1 year
       :secret       => ENV['SESSION_SECRET']
