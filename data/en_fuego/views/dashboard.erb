@@ -1,26 +1,15 @@
 <h1>You are En Fuego</h1>
 
-<h2>Post a Workout</h2>
+<h2>Post a Run</h2>
 <form method="post" action="/entries">
   <div>
-    <label for="entry_message">Message</label>
-    <input id="entry_message" name="entry[message]" />
+    <label for="entry_workout_title">Title</label>
+    <input id="entry_workout_title" name="entry[workout][title]" />
   </div>
   <div>
-    <label for="entry_workout_activity_type">Activity Type</label>
-    <input id="entry_workout_activity_type" name="entry[workout][activity_type]" value="running" />
-  </div>
-  <div>
-    <label for="entry_workout_completed_at">Completed At</label>
-    <input id="entry_workout_completed_at" name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" />
-  </div>
-  <div>
-    <label for="entry_workout_distance_value">Distance Value</label>
+    <label for="entry_workout_distance_value">Distance (miles)</label>
     <input id="entry_workout_distance_value" name="entry[workout][distance][value]" />
-  </div>
-  <div>
-    <label for="entry_workout_distance_units">Distance Units</label>
-    <input id="entry_workout_distance_units" name="entry[workout][distance][units]" value="miles" />
+    <input id="entry_workout_distance_units" name="entry[workout][distance][units]" value="miles" type="hidden" />
   </div>
   <div>
     <label for="entry_workout_duration">Duration (seconds)</label>
@@ -28,13 +17,25 @@
   </div>
   <div>
     <label for="entry_workout_felt">Felt</label>
-    <input id="entry_workout_felt" name="entry[workout][felt]" value="good" />
+    <select id="entry_workout_felt" name="entry[workout][felt]">
+      <option value="great">Great</option>
+      <option value="good" selected="selected">Good</option>
+      <option value="alright">Alright</option>
+      <option value="blah">Blah</option>
+      <option value="tired">Tired</option>
+      <option value="injured">Injured</option>
+    </select>
   </div>
   <div>
-    <label for="entry_workout_title">Title</label>
-    <input id="entry_workout_title" name="entry[workout][title]" />
+    <label for="entry_message">Notes</label>
+    <textarea id="entry_message" name="entry[message]"></textarea>
   </div>
   <div>
+    <label for="entry_workout_completed_at">Completed At</label>
+    <input id="entry_workout_completed_at" name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" />
+  </div>
+  <div>
+    <input id="entry_workout_activity_type" name="entry[workout][activity_type]" value="running" type="hidden" />
     <input type="submit" value="Post Entry" />
   </div>
 </form>

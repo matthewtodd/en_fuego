@@ -21,8 +21,8 @@ module MechanizeDriver
   end
 
   def fill_in(name, options={})
-    form = current_page.forms.find { |form| form.text_field?(name) }
-    raise MissingElement.new('text field', name, current_page) if form.nil?
+    form = current_page.forms.find { |form| form.has_field?(name) }
+    raise MissingElement.new('field', name, current_page) if form.nil?
     form[name] = options[:with]
   end
 
