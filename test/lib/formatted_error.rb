@@ -19,6 +19,19 @@ class FormattedError < RuntimeError
   def separator
     '-' * 72
   end
+
+  def format_hash(hash)
+    hash.to_a.sort.map { |k,v| "#{k}: #{format_value(v)}" }.join("\n")
+  end
+
+  def format_value(value)
+    case value
+    when Array, Hash
+      value.inspect
+    else
+      value.to_s
+    end
+  end
 end
 
 class MissingElement < FormattedError
@@ -46,6 +59,26 @@ class MissingXpath < FormattedError
   end
 end
 
+class OAuthSignatureError < FormattedError
+  def initialize(signature, consumer, access_token)
+    @signature    = signature
+    @consumer     = consumer
+    @access_token = access_token
+    super()
+  end
+
+  # TODO a method called align_colons would be nice...
+  def sections
+    [
+      "Expected: #{@signature.signature}\n     Was: #{@signature.request.signature}",
+      format_hash(@signature.request.request.env),
+      @signature.request.request.body.read,
+      "Consumer Secret:\nServer:  #{@consumer.secret}\nRequest: #{@signature.consumer_secret}",
+      "Token Secret:\nServer:  #{@access_token.secret}\nRequest: #{@signature.token_secret}"
+    ]
+  end
+end
+
 class UnimplementedRequest < FormattedError
   def initialize(request, options={})
     @request = request
@@ -70,20 +103,11 @@ class UnimplementedRequest < FormattedError
   end
 
   def headers
-    @request.env.to_a.sort.map { |k,v| "#{k}: #{format_value(v)}" }.join("\n")
+    format_hash(@request.env)
   end
 
   def body
     @request.body.rewind
     @request.body.read
-  end
-
-  def format_value(value)
-    case value
-    when Array, Hash
-      value.inspect
-    else
-      value.to_s
-    end
   end
 end

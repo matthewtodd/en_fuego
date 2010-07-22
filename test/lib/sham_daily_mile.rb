@@ -26,6 +26,13 @@ class ShamDailyMile < Sinatra::Base
     { :entries => entries }.to_json
   end
 
+  post '/entries.json' do
+    @tokens.verify_access(request)
+    attributes = JSON.parse(request.body.read)
+    @entries.push(attributes.merge(:user => { :display_name => 'Bob' }))
+    status 200
+  end
+
   not_found do
     raise UnimplementedRequest.new(request, :headers => true)
   end
@@ -33,11 +40,7 @@ class ShamDailyMile < Sinatra::Base
   def initialize(callback)
     @tokens = Tokens.new(callback)
     @tokens.populate(ENV)
-    super(nil)
-  end
-
-  def entries
-    JSON.parse <<-JSON, :symbolize_names => true
+    @entries = JSON.parse <<-JSON, :symbolize_names => true
       [
         {
           "id": 232323232,
@@ -62,6 +65,12 @@ class ShamDailyMile < Sinatra::Base
         }
       ]
     JSON
+
+    super(nil)
+  end
+
+  def entries
+    @entries
   end
 
   class Tokens
@@ -118,7 +127,7 @@ class ShamDailyMile < Sinatra::Base
       sig = OAuth::Signature.build(request, options.merge(:consumer => @consumer))
 
       unless sig.verify
-        raise "Signature verification failed: #{sig.signature} != #{sig.request.signature}"
+        raise OAuthSignatureError.new(sig, @consumer, @access)
       end
 
       if verifier = sig.request.oauth_verifier

@@ -33,6 +33,10 @@ module EnFuego
         Entry.from_json(raw_json)
       end
 
+      def post_entry(consumer, attributes)
+        access_token(consumer).post('/entries.json', attributes.to_json, 'Accept' => 'application/json', 'Content-Type' => 'application/json')
+      end
+
       private
 
       def access_token(consumer)
@@ -40,6 +44,7 @@ module EnFuego
       end
     end
 
+    # TODO would something like OpenStruct give me easier method-like access to attributes?
     class Entry
       def self.from_json(feed)
         JSON.parse(feed).fetch('entries').map { |hash| new(hash) }
@@ -134,17 +139,22 @@ module EnFuego
 
     get '/sign-up' do
       finish_authorize_with_oauth do |attributes|
+        # TODO squash these 2 lines together.
         user = User.create(attributes)
         session.user = user
         redirect '/'
       end
     end
 
+    # TODO change this path to mirror DailyMile, thus leaving the namespace more open to additions.
+    # But wait to change it until I've heard back from Socialite support!
     get '/feed/:api_key' do
+      # TODO see if there's a way to raise a not found from sequel, and then catch that with sinatra.
       user = User[:api_key => params[:api_key]]
       not_found unless user
       entries = user.fetch_entries(oauth_consumer)
 
+      # TODO move all this to_xml stuff into a builder template
       content_type 'application/atom+xml'
 
       builder do |xml|
@@ -160,6 +170,17 @@ module EnFuego
             entry.to_xml(xml, request.url)
           end
         end
+      end
+    end
+
+    # TODO don't just render sign_in; redirect instead.
+    # TODO move authentication logic to a before filter?
+    post '/entries' do
+      if session.user
+        session.user.post_entry(oauth_consumer, params[:entry])
+        redirect '/'
+      else
+        erb :sign_in
       end
     end
   end
