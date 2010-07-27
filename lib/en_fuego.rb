@@ -1,5 +1,6 @@
 module EnFuego
   autoload :Application, 'en_fuego/application'
+  autoload :Comments,    'en_fuego/comments'
   autoload :Distance,    'en_fuego/distance'
   autoload :Duration,    'en_fuego/duration'
   autoload :Entry,       'en_fuego/entry'

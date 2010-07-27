@@ -31,8 +31,8 @@ module EnFuego
     end
 
     post '/entries' do
-      if session.user
-        session.user.post_entry(oauth_consumer, params[:entry])
+      if user = session.user
+        user.post_entry(oauth_consumer, params[:entry])
         redirect '/'
       else
         redirect '/sign-in'
