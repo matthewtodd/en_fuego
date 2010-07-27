@@ -180,7 +180,7 @@ module EnFuego
       end
 
       def to_html
-        "<p>#{@message}</p>"
+        "<p>#{@message.strip.gsub("\n", '<br />')}</p>"
       end
     end
 
