@@ -153,25 +153,10 @@ module EnFuego
       # TODO see if there's a way to raise a not found from sequel, and then catch that with sinatra.
       user = User[:api_key => params[:api_key]]
       not_found unless user
-      entries = user.fetch_entries(oauth_consumer)
+      @entries = user.fetch_entries(oauth_consumer)
 
-      # TODO move all this to_xml stuff into a builder template
-      content_type 'application/atom+xml'
-
-      builder do |xml|
-        xml.instruct!
-        xml.feed(:xmlns => 'http://www.w3.org/2005/Atom') do
-          xml.id request.url
-          xml.title 'En Fuego'
-          xml.updated entries.first.updated
-          xml.link :rel => 'self',      :href => request.url
-          xml.link :rel => 'alternate', :href => request.url[0...request.url.index(request.fullpath)]
-
-          entries.each do |entry|
-            entry.to_xml(xml, request.url)
-          end
-        end
-      end
+      content_type :atom
+      builder :feed
     end
 
     # TODO don't just render sign_in; redirect instead.
