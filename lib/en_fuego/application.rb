@@ -55,42 +55,23 @@ module EnFuego
         @attributes = attributes
       end
 
-      def updated
-        @attributes['created_at']
-      end
-
-      def to_xml(xml, uri)
-        xml.entry do
-          xml.id atom_id(uri)
-          xml.title title
-          xml.updated updated
-
-          xml.author do
-            xml.name user_name
-            xml.uri  user_url
-          end
-
-          xml.content content, :type => 'html'
-          xml.link :rel => 'self', :href => permalink
-          xml.published updated
-        end
-      end
-
-      private
-
       def atom_id(uri)
         "#{uri}/#{@attributes['id']}"
       end
 
       def title
-        "#{user_name} posted a workout"
+        "#{author_name} posted a workout"
       end
 
-      def user_name
+      def updated
+        @attributes['created_at']
+      end
+
+      def author_name
         @attributes['user']['display_name']
       end
 
-      def user_url
+      def author_url
         @attributes['user']['url']
       end
 
@@ -99,6 +80,8 @@ module EnFuego
         content.push(workout_html) if @attributes['workout']
         content.push(media_html)   if @attributes['media']
         content.push(message_html) if @attributes['message']
+        content.push('<hr />')
+        content.push(attributes_html)
         content.join("\n\n")
       end
 
@@ -106,16 +89,82 @@ module EnFuego
         @attributes['permalink']
       end
 
+      private
+
       def workout_html
-        "<pre>#{JSON.pretty_generate(@attributes['workout'])}</pre>"
+        Workout.new(@attributes['workout']).to_html
       end
 
       def media_html
-        ''
+        Media.new(@attribtues['media']).to_html
       end
 
       def message_html
         "<p>#{@attributes['message']}</p>"
+      end
+
+      def attributes_html
+        "<pre>#{JSON.pretty_generate(@attributes)}</pre>"
+      end
+    end
+
+    class Workout
+      def initialize(attributes)
+        @title    = attributes['title']
+        @duration = Duration.new(attributes['duration'])
+        @type     = attributes['type']
+        @felt     = attributes['felt']
+        @distance = Distance.new(attributes['distance'] || {})
+      end
+
+      def to_html
+        if @type == 'running'
+          content = []
+          content.push "<h1>#{@title}</h1>" if @title
+          content.push "<p>Ran #{@distance} in #{@duration} and felt #{@felt}.</p>"
+          content.join("\n\n")
+        else
+          ''
+        end
+      end
+    end
+
+    class Media
+      def initialize(attributes)
+      end
+
+      def to_html
+        ''
+      end
+    end
+
+    class Duration
+      def initialize(value)
+        @value = value
+      end
+
+      def to_s
+        if @value
+          minutes, seconds = @value.to_i.divmod(60)
+          "#{minutes}:#{seconds}"
+        else
+          'unknown time'
+        end
+      end
+    end
+
+    class Distance
+      def initialize(attributes)
+        @value = attributes['value']
+        @units = attributes['units']
+      end
+
+      def to_s
+        if @value
+          "#{@value} #{@units}"
+        else
+          'unknown distance'
+        end
       end
     end
 
