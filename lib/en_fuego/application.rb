@@ -110,18 +110,38 @@ module EnFuego
       end
 
       def title(author_name)
-        "#{author_name} ran #{@distance}"
+        case @type
+        when 'running'
+          "#{author_name} ran #{@distance}"
+        when 'cycling'
+          "#{author_name} cycled #{@distance}"
+        when 'swimming'
+          "#{author_name} swam #{@distance}"
+        when 'walking'
+          "#{author_name} walked #{@distance}"
+        when 'fitness'
+          "#{author_name} worked out"
+        end
       end
 
       def to_html
-        if @type == 'running'
-          content = []
-          content.push "<h1>#{@title}</h1>" if @title
+        content = []
+        content.push "<h1>#{@title}</h1>" if @title
+
+        case @type
+        when 'running'
           content.push "<p>Ran #{@distance} in #{@duration} and felt #{@felt}.</p>"
-          content.join("\n\n")
-        else
-          ''
+        when 'cycling'
+          content.push "<p>Cycled #{@distance} in #{@duration} and felt #{@felt}.</p>"
+        when 'swimming'
+          content.push "<p>Swam #{@distance} in #{@duration} and felt #{@felt}.</p>"
+        when 'walking'
+          content.push "<p>Walked #{@distance} in #{@duration} and felt #{@felt}.</p>"
+        when 'fitness'
+          content.push "<p>Worked out and felt #{@felt}.</p>"
         end
+
+        content.join("\n\n")
       end
     end
 
@@ -132,8 +152,7 @@ module EnFuego
 
       def to_s
         if @value
-          minutes, seconds = @value.to_i.divmod(60)
-          "#{minutes}:#{seconds}"
+          '%d:%02d' % @value.to_i.divmod(60)
         else
           'an unknown time'
         end
@@ -175,7 +194,7 @@ module EnFuego
       end
 
       def to_html
-        "<ol>#{@comments.map { |c| comment_html(c) }}</ol>"
+        "<h2>Comments</h2><ol>#{@comments.map { |c| comment_html(c) }}</ol>"
       end
 
       private
