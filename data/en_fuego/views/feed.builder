@@ -20,7 +20,7 @@ xml.feed(:xmlns => 'http://www.w3.org/2005/Atom') do
 
       xml.content   entry.content, :type => 'html'
       xml.link      :href => entry.permalink, :rel => 'self'
-      xml.published entry.updated
+      xml.published entry.published
     end
   end
 end

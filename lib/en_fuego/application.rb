@@ -53,6 +53,12 @@ module EnFuego
 
       def initialize(attributes)
         @attributes = attributes
+
+        @contents = []
+        @contents.push(Workout.new(attributes['workout'])) if attributes['workout']
+        @contents.push(Message.new(attributes['message'])) if attributes['message']
+        @contents.push(Comments.new(attributes['comments'])) if attributes['comments']
+        @contents.push(Attributes.new(attributes))
       end
 
       def atom_id(uri)
@@ -60,11 +66,15 @@ module EnFuego
       end
 
       def title
-        "#{author_name} posted a workout"
+        ask_contents(:title, author_name) || "#{author_name} posted something"
+      end
+
+      def published
+        @attributes['created_at']
       end
 
       def updated
-        @attributes['created_at']
+        ask_contents(:updated_at) || @attributes['created_at']
       end
 
       def author_name
@@ -76,13 +86,7 @@ module EnFuego
       end
 
       def content
-        content = []
-        content.push(workout_html) if @attributes['workout']
-        content.push(media_html)   if @attributes['media']
-        content.push(message_html) if @attributes['message']
-        content.push('<hr />')
-        content.push(attributes_html)
-        content.join("\n\n")
+        @contents.map { |content| content.to_html }.join("\n\n")
       end
 
       def permalink
@@ -91,20 +95,8 @@ module EnFuego
 
       private
 
-      def workout_html
-        Workout.new(@attributes['workout']).to_html
-      end
-
-      def media_html
-        Media.new(@attributes['media']).to_html
-      end
-
-      def message_html
-        "<p>#{@attributes['message']}</p>"
-      end
-
-      def attributes_html
-        "<pre>#{JSON.pretty_generate(@attributes)}</pre>"
+      def ask_contents(*args)
+        @contents.map { |content| content.send(*args) if content.respond_to?(args.first) }.flatten.first
       end
     end
 
@@ -115,6 +107,10 @@ module EnFuego
         @type     = attributes['type']
         @felt     = attributes['felt']
         @distance = Distance.new(attributes['distance'] || {})
+      end
+
+      def title(author_name)
+        "#{author_name} ran #{@distance}"
       end
 
       def to_html
@@ -129,15 +125,6 @@ module EnFuego
       end
     end
 
-    class Media
-      def initialize(attributes)
-      end
-
-      def to_html
-        ''
-      end
-    end
-
     class Duration
       def initialize(value)
         @value = value
@@ -148,7 +135,7 @@ module EnFuego
           minutes, seconds = @value.to_i.divmod(60)
           "#{minutes}:#{seconds}"
         else
-          'unknown time'
+          'an unknown time'
         end
       end
     end
@@ -163,8 +150,49 @@ module EnFuego
         if @value
           "#{@value} #{@units}"
         else
-          'unknown distance'
+          'an unknown distance'
         end
+      end
+    end
+
+    class Message
+      def initialize(message)
+        @message = message
+      end
+
+      def to_html
+        "<p>#{@message}</p>"
+      end
+    end
+
+    class Comments
+      def initialize(comments)
+        @comments = comments
+      end
+
+      def updated_at
+        @comments.map { |comment| comment['created_at'] }.max
+      end
+
+      def to_html
+        "<ol>#{@comments.map { |c| comment_html(c) }}</ol>"
+      end
+
+      private
+
+      def comment_html(comment)
+        "<li><p>#{comment['user']['display_name']}: #{comment['body']}</p></li>"
+      end
+    end
+
+    class Attributes
+      def initialize(attributes)
+        @attributes = attributes
+      end
+
+      def to_html
+        "<pre>#{JSON.pretty_generate(@attributes)}</pre>"
+        ''
       end
     end
 
