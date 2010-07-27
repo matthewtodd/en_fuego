@@ -14,7 +14,7 @@ module EnFuego
       module Methods
         def user
           if key?(:user)
-            ::EnFuego::Application::User[fetch(:user)]
+            ::EnFuego::User[fetch(:user)]
           else
             nil
           end
