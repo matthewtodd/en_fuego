@@ -96,7 +96,7 @@ module EnFuego
       end
 
       def media_html
-        Media.new(@attribtues['media']).to_html
+        Media.new(@attributes['media']).to_html
       end
 
       def message_html
