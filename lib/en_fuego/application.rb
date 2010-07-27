@@ -30,6 +30,24 @@ module EnFuego
       end
     end
 
+    post '/entries' do
+      if session.user
+        session.user.post_entry(oauth_consumer, params[:entry])
+        redirect '/'
+      else
+        redirect '/sign-in'
+      end
+    end
+
+    get '/:api_key/entries/friends.atom' do
+      if user = User[:api_key => params[:api_key]]
+        content_type :atom
+        builder :feed, :locals => { :entries => user.fetch_entries(oauth_consumer) }
+      else
+        not_found
+      end
+    end
+
     get '/sign-in' do
       erb :sign_in
     end
@@ -49,26 +67,6 @@ module EnFuego
       finish_authorize_with_oauth do |attributes|
         session.user = User.create(attributes)
         redirect '/'
-      end
-    end
-
-    # TODO change this path to mirror DailyMile, thus leaving the namespace more open to additions.
-    # But wait to change it until I've heard back from Socialite support!
-    get '/feed/:api_key' do
-      if user = User[:api_key => params[:api_key]]
-        content_type :atom
-        builder :feed, :locals => { :entries => user.fetch_entries(oauth_consumer) }
-      else
-        not_found
-      end
-    end
-
-    post '/entries' do
-      if session.user
-        session.user.post_entry(oauth_consumer, params[:entry])
-        redirect '/'
-      else
-        redirect '/sign-in'
       end
     end
   end
