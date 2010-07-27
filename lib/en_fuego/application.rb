@@ -247,9 +247,7 @@ module EnFuego
 
     get '/sign-up' do
       finish_authorize_with_oauth do |attributes|
-        # TODO squash these 2 lines together.
-        user = User.create(attributes)
-        session.user = user
+        session.user = User.create(attributes)
         redirect '/'
       end
     end
