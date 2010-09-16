@@ -30,7 +30,7 @@ class ApplicationTest < Test::Unit::TestCase
     fill_in 'entry[workout][distance][value]', :with => '10'
     fill_in 'entry[workout][distance][units]', :with => 'miles'
     fill_in 'entry[workout][duration]', :with => '6000'
-    fill_in 'entry[workout][felt]', :with => 'good'
+    choose 'entry[workout][felt]', 'good'
     fill_in 'entry[workout][title]', :with => 'Lema Rd. / Coffee Fields'
     click_button 'Post Entry'
 

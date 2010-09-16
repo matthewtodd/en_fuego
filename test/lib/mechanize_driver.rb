@@ -3,6 +3,13 @@ module MechanizeDriver
     @agent ||= Mechanize.new
   end
 
+  def choose(name, value)
+    criteria = { :name => name, :value => value }
+    form = current_page.forms.find { |form| form.radiobutton_with(criteria) }
+    raise MissingElement.new('radio button', criteria.inspect, current_page) if form.nil?
+    form.radiobutton_with(criteria).check
+  end
+
   def click_button(text)
     raise MissingElement.new('button', text, current_page) unless current_page.kind_of?(Mechanize::Page)
     form = current_page.forms.find { |form| form.button_with(:value => text) }
