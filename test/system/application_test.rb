@@ -32,7 +32,7 @@ class ApplicationTest < Test::Unit::TestCase
     fill_in 'entry[workout][duration]', :with => '6000'
     choose 'entry[workout][felt]', 'good'
     fill_in 'entry[workout][title]', :with => 'Lema Rd. / Coffee Fields'
-    click_button 'Post Entry'
+    click_button 'Post this Workout'
 
     follow_header_link :type => 'application/atom+xml'
     should_see_entry :message => 'Excellent run today!'

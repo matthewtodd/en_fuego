@@ -1,35 +1,34 @@
-<h1>You are En Fuego</h1>
-
 <form method="post" action="/entries">
-  <div>
-    <input name="entry[workout][title]" placeholder="Route" autofocus />
-  </div>
-  <div>
+  <h1>You are En Fuego</h1>
+  <p>
+    <input name="entry[workout][title]" placeholder="Route" autofocus class="wide" />
+  </p>
+
+  <p>
     <input name="entry[workout][distance][value]" size="5" placeholder="Miles" /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-    <input id="hours"   size="2" maxlength="2" placeholder="HH" onchange="updateDuration()" /> :
-    <input id="minutes" size="2" maxlength="2" placeholder="MM" onchange="updateDuration()" /> :
-    <input id="seconds" size="2" maxlength="2" placeholder="SS" onchange="updateDuration()" />
+    <input id="hours"   size="2" maxlength="2" placeholder="hh" onchange="updateDuration()" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" onchange="updateDuration()" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" onchange="updateDuration()" />
     <input id="duration" name="entry[workout][duration]" type="hidden" /> on
     <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
-  </div>
-  <div>
+  </p>
+
+  <p>
     <label><input type="radio" name="entry[workout][felt]" value="great" />Great</label>
-    <label><input type="radio" name="entry[workout][felt]" value="good" />Good</label>
+    <label><input type="radio" name="entry[workout][felt]" value="good" checked />Good</label>
     <label><input type="radio" name="entry[workout][felt]" value="alright" />Alright</label>
     <label><input type="radio" name="entry[workout][felt]" value="blah" />Blah</label>
     <label><input type="radio" name="entry[workout][felt]" value="tired" />Tired</label>
     <label><input type="radio" name="entry[workout][felt]" value="injured" />Injured</label>
-  </div>
-  <div>
-    <textarea name="entry[message]" placeholder="Notes"></textarea>
-  </div>
-  <div>
-  </div>
-  <div>
+  </p>
+
+  <p>
+    <textarea name="entry[message]" placeholder="Notes" class="wide" rows="8"></textarea>
+  </p>
+
+  <p class="buttons">
     <input name="entry[workout][activity_type]" value="running" type="hidden" />
-    <input type="submit" value="Post Entry" />
-  </div>
+    <input type="submit" value="Post this Workout" />
+  </p>
 </form>
 
 <script type="text/javascript">

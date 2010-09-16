@@ -4,6 +4,33 @@
     <meta charset="utf-8" />
     <title>You Are En Fuego</title>
     <% if session.user %><link rel="alternate" type="application/atom+xml" href="/<%= session.user.api_key %>/entries/friends.atom" /><% end %>
+    <style type="text/css">
+      body {
+        background-color: #fc0;
+        font-family: Monaco, monospace;
+        margin: auto;
+        width: 600px;
+      }
+
+      form {
+        background-color: #fff;
+        color: #333;
+        padding: 1em;
+      }
+
+      input, textarea {
+        font: inherit;
+      }
+
+      .buttons {
+        text-align: right;
+      }
+
+      .wide {
+        width: 560px;
+      }
+
+    </style>
   </head>
 
   <body>
