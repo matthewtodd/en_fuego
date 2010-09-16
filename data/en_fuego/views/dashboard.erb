@@ -7,7 +7,7 @@
   <p>
     <input name="entry[workout][distance][value]" size="5" placeholder="Miles" required /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-    <input id="hours" size="2" maxlength="2" placeholder="hh" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" required />:<input id="seconds" size="2" maxlength="2" placeholder="ss" required />
+    <input id="hours" size="2" maxlength="2" placeholder="hh" pattern="\d?"/>:<input id="minutes" size="2" maxlength="2" placeholder="mm" required pattern="[0-5]?\d" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" required pattern="[0-5]?\d" />
     <input id="duration" name="entry[workout][duration]" type="hidden" /> on
     <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" required />
   </p>
