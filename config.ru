@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler'
-Bundler.require(:default)
+Bundler.require(:default, ENV['RACK_ENV'] || :development)
 
 $:.unshift File.expand_path('../lib', __FILE__)
 require 'en_fuego'
