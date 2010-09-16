@@ -3,17 +3,16 @@
 <h2>Post a Run</h2>
 <form method="post" action="/entries">
   <div>
-    <input name="entry[workout][title]" placeholder="Title" autofocus />
+    <input name="entry[workout][title]" placeholder="Route" autofocus />
   </div>
   <div>
-    <input name="entry[workout][distance][value]" placeholder="Distance (miles)" />
+    <input name="entry[workout][distance][value]" size="5" placeholder="Miles" /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-  </div>
-  <div>
     <input id="hours"   size="2" maxlength="2" placeholder="HH" onchange="updateDuration()" /> :
     <input id="minutes" size="2" maxlength="2" placeholder="MM" onchange="updateDuration()" /> :
     <input id="seconds" size="2" maxlength="2" placeholder="SS" onchange="updateDuration()" />
-    <input id="duration" name="entry[workout][duration]" type="hidden" />
+    <input id="duration" name="entry[workout][duration]" type="hidden" /> on
+    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
   </div>
   <div>
     <label><input type="radio" name="entry[workout][felt]" value="great" />Great</label>
@@ -27,7 +26,6 @@
     <textarea name="entry[message]" placeholder="Notes"></textarea>
   </div>
   <div>
-    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
   </div>
   <div>
     <input name="entry[workout][activity_type]" value="running" type="hidden" />
