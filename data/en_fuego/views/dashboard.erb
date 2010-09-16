@@ -3,7 +3,7 @@
 <h2>Post a Run</h2>
 <form method="post" action="/entries">
   <div>
-    <input name="entry[workout][title]" placeholder="Title" />
+    <input name="entry[workout][title]" placeholder="Title" autofocus />
   </div>
   <div>
     <input name="entry[workout][distance][value]" placeholder="Distance (miles)" />
@@ -27,7 +27,7 @@
     <textarea name="entry[message]" placeholder="Notes"></textarea>
   </div>
   <div>
-    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" />
+    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
   </div>
   <div>
     <input name="entry[workout][activity_type]" value="running" type="hidden" />
