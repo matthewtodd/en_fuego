@@ -1,4 +1,4 @@
-<form method="post" action="/entries">
+<form method="post" action="/entries" onsubmit="calculateDuration()">
   <h1>You are En Fuego</h1>
   <p>
     <input name="entry[workout][title]" placeholder="Route" autofocus class="wide" />
@@ -7,7 +7,7 @@
   <p>
     <input name="entry[workout][distance][value]" size="5" placeholder="Miles" /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-    <input id="hours"   size="2" maxlength="2" placeholder="hh" onchange="updateDuration()" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" onchange="updateDuration()" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" onchange="updateDuration()" />
+    <input id="hours" size="2" maxlength="2" placeholder="hh" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" />
     <input id="duration" name="entry[workout][duration]" type="hidden" /> on
     <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
   </p>
@@ -36,7 +36,7 @@
     return parseInt(document.getElementById(elementId).value) || 0;
   }
 
-  function updateDuration() {
+  function calculateDuration() {
     document.getElementById('duration').value =
       numericValueOf('hours')   * 3600 +
       numericValueOf('minutes') * 60   +
