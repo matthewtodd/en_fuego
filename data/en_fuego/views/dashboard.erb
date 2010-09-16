@@ -10,7 +10,10 @@
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
   </div>
   <div>
-    <input name="entry[workout][duration]" placeholder="Duration (seconds)" />
+    <input id="hours"   size="2" maxlength="2" placeholder="HH" onchange="updateDuration()" /> :
+    <input id="minutes" size="2" maxlength="2" placeholder="MM" onchange="updateDuration()" /> :
+    <input id="seconds" size="2" maxlength="2" placeholder="SS" onchange="updateDuration()" />
+    <input id="duration" name="entry[workout][duration]" type="hidden" />
   </div>
   <div>
     <label><input type="radio" name="entry[workout][felt]" value="great" />Great</label>
@@ -33,3 +36,16 @@
 </form>
 
 <h2><a href="/<%= session.user.api_key %>/entries/friends.atom">Subscribe to Feed</a></h2>
+
+<script type="text/javascript">
+  function numericValueOf(elementId) {
+    return parseInt(document.getElementById(elementId).value) || 0;
+  }
+
+  function updateDuration() {
+    document.getElementById('duration').value =
+      numericValueOf('hours')   * 3600 +
+      numericValueOf('minutes') * 60   +
+      numericValueOf('seconds');
+  }
+</script>
