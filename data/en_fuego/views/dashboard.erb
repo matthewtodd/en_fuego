@@ -1,15 +1,15 @@
 <form method="post" action="/entries" onsubmit="calculateDuration()">
   <h1>You are En Fuego</h1>
   <p>
-    <input name="entry[workout][title]" placeholder="Route" autofocus class="wide" />
+    <input name="entry[workout][title]" placeholder="Route" autofocus required class="wide" />
   </p>
 
   <p>
-    <input name="entry[workout][distance][value]" size="5" placeholder="Miles" /> in
+    <input name="entry[workout][distance][value]" size="5" placeholder="Miles" required /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-    <input id="hours" size="2" maxlength="2" placeholder="hh" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" />
+    <input id="hours" size="2" maxlength="2" placeholder="hh" />:<input id="minutes" size="2" maxlength="2" placeholder="mm" required />:<input id="seconds" size="2" maxlength="2" placeholder="ss" required />
     <input id="duration" name="entry[workout][duration]" type="hidden" /> on
-    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" />
+    <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" required />
   </p>
 
   <p>
