@@ -1,6 +1,5 @@
 <h1>You are En Fuego</h1>
 
-<h2>Post a Run</h2>
 <form method="post" action="/entries">
   <div>
     <input name="entry[workout][title]" placeholder="Route" autofocus />
@@ -32,8 +31,6 @@
     <input type="submit" value="Post Entry" />
   </div>
 </form>
-
-<h2><a href="/<%= session.user.api_key %>/entries/friends.atom">Subscribe to Feed</a></h2>
 
 <script type="text/javascript">
   function numericValueOf(elementId) {

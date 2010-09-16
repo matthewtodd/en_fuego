@@ -13,7 +13,7 @@ class ApplicationTest < Test::Unit::TestCase
     click_button 'Sign In With OpenID'
     click_button 'Authorize'
     click_button 'Allow'
-    click_link 'Subscribe to Feed'
+    follow_header_link :type => 'application/atom+xml'
     should_see_each_entry
   end
 
@@ -34,7 +34,7 @@ class ApplicationTest < Test::Unit::TestCase
     fill_in 'entry[workout][title]', :with => 'Lema Rd. / Coffee Fields'
     click_button 'Post Entry'
 
-    click_link 'Subscribe to Feed'
+    follow_header_link :type => 'application/atom+xml'
     should_see_entry :message => 'Excellent run today!'
   end
 

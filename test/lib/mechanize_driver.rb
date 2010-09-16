@@ -24,13 +24,19 @@ module MechanizeDriver
   end
 
   def current_page
-    @agent.current_page
+    @agent.current_page.extend(PageExtensions)
   end
 
   def fill_in(name, options={})
     form = current_page.forms.find { |form| form.has_field?(name) }
     raise MissingElement.new('field', name, current_page) if form.nil?
     form[name] = options[:with]
+  end
+
+  def follow_header_link(options)
+    link = current_page.header_link_with(options)
+    raise MissingElement.new('header link', options.inspect, current_page) if link.nil?
+    link.click
   end
 
   def should_see_xpath(expression)
@@ -42,5 +48,19 @@ module MechanizeDriver
 
   def visit(url)
     agent.get(url)
+  end
+
+  module PageExtensions
+    def header_links
+      search('head > link').map do |node|
+        Mechanize::Page::Link.new(node, @mech, self)
+      end
+    end
+
+    def header_link_with(attributes)
+      header_links.find do |link|
+        attributes.all? { |key, value| link.attributes[key] == value }
+      end
+    end
   end
 end

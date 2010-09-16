@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>You Are En Fuego</title>
+    <% if session.user %><link rel="alternate" type="application/atom+xml" href="/<%= session.user.api_key %>/entries/friends.atom" /><% end %>
   </head>
 
   <body>
