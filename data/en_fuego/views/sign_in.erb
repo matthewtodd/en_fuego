@@ -1,7 +1,9 @@
 <form method="post" action="/sign-in">
   <h1>Please Sign In</h1>
   <p>
-    <input type="text" name="openid_url" />
+    <input name="openid_url" required class="wide" />
+  </p>
+  <p class="buttons">
     <input type="submit" value="Sign In With OpenID" />
   </p>
 </form>
