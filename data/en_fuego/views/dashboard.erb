@@ -1,13 +1,13 @@
-<form method="post" action="/entries" onsubmit="calculateDuration()">
-  <h1>You are En Fuego</h1>
+<form method="post" action="/entries" autocomplete="off" onsubmit="calculateDuration()">
+  <h1>You Are En Fuego</h1>
   <p>
-    <input name="entry[workout][title]" placeholder="Route" autofocus required class="wide" />
+    <input name="entry[workout][title]" placeholder="Route" autofocus autocomplete="on" required class="wide" />
   </p>
 
   <p>
     <input name="entry[workout][distance][value]" size="5" placeholder="Miles" required /> in
     <input name="entry[workout][distance][units]" value="miles" type="hidden" />
-    <input id="hours" size="2" maxlength="2" placeholder="hh" pattern="\d?"/>:<input id="minutes" size="2" maxlength="2" placeholder="mm" required pattern="[0-5]?\d" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" required pattern="[0-5]?\d" />
+    <input id="hours" size="2" maxlength="2" placeholder="hh" pattern="\d?"/>:<input id="minutes" size="2" maxlength="2" placeholder="mm" required pattern="[0-5]\d" />:<input id="seconds" size="2" maxlength="2" placeholder="ss" required pattern="[0-5]\d" />
     <input id="duration" name="entry[workout][duration]" type="hidden" /> on
     <input name="entry[workout][completed_at]" value="<%= Time.now.strftime('%Y-%m-%d') %>" type="date" required />
   </p>
