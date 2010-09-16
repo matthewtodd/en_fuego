@@ -1,0 +1,6 @@
+= En Fuego
+
+A lightweight client for the DailyMile API. (DailyMile pages take a long time to load over here.)
+
+* Accepts posted workouts.
+* Serves an atom feed of you and your friends.
